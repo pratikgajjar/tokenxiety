@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Tokenxiety",
   "description": "New tab dashboard for Claude and Codex usage limits.",
-  "version": "0.26.0",
+  "version": "0.27.0",
   "permissions": ["storage", "alarms"],
   "icons": {
     "16":  "src/assets/icons/icon-16.png",
