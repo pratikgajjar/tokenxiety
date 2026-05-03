@@ -4,6 +4,11 @@
   "description": "New tab dashboard for Claude and Codex usage limits.",
   "version": "0.25.0",
   "permissions": ["storage", "declarativeNetRequestWithHostAccess", "alarms"],
+  "icons": {
+    "16":  "src/assets/icons/icon-16.png",
+    "48":  "src/assets/icons/icon-48.png",
+    "128": "src/assets/icons/icon-128.png"
+  },
   "host_permissions": [
     "https://claude.ai/*",
     "https://chatgpt.com/*",
@@ -37,7 +42,12 @@
     "extension_pages": "script-src 'self'; object-src 'none'"
   },
   "action": {
-    "default_title": "Tokenxiety"
+    "default_title": "Tokenxiety",
+    "default_icon": {
+      "16":  "src/assets/icons/icon-16.png",
+      "48":  "src/assets/icons/icon-48.png",
+      "128": "src/assets/icons/icon-128.png"
+    }
   },
   "browser_specific_settings": {
     "gecko": {

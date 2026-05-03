@@ -1,0 +1,74 @@
+# Tokenxiety — Privacy Policy
+
+_Last updated: 2026-05-03_
+
+## Summary
+
+Tokenxiety is a browser extension that displays your **own** Claude (Anthropic)
+and Codex / ChatGPT (OpenAI) usage limits on your new tab page. It does not
+send any of your data to a server we control. Everything is processed and
+stored locally in your browser.
+
+## What we access
+
+Tokenxiety is granted **host permissions** for these origins only:
+
+- `https://claude.ai/*`
+- `https://chatgpt.com/*`
+- `https://chat.openai.com/*`
+
+When you open a new tab, or every few minutes via a background alarm, the
+extension makes the same authenticated calls your browser already makes when
+you visit the providers' usage pages:
+
+- `GET https://claude.ai/api/organizations` and `…/api/organizations/<org>/usage`
+- `GET https://chatgpt.com/api/auth/session` and `…/backend-api/wham/usage`
+
+These requests use the cookies your browser already holds for those domains.
+The extension never sees, copies, transmits, or stores those cookies.
+
+## What we store (locally only)
+
+In your browser's local IndexedDB (`tokenxiety` database) we keep:
+
+1. **Latest quota record** per provider — utilization percent, remaining
+   percent, reset timestamps, plan name, and the email the provider exposes
+   on its `/usage` endpoint.
+2. **Raw API response snapshots** — the JSON returned by the provider, so
+   the dashboard can re-render historical states without re-fetching.
+3. **Bucket samples** — a time-series of utilization values (number per
+   bucket per minute) used to draw sparklines and the activity heatmap.
+
+We do **not** store: cookies, session tokens, bearer tokens, prompts,
+conversations, message contents, or any content of provider responses other
+than the usage fields listed above.
+
+## What we send to third parties
+
+Only the requests listed under "What we access". Those go directly from your
+browser to Anthropic / OpenAI — exactly as if you visited their usage page
+yourself.
+
+We **do not** send data to any server operated by Tokenxiety. There are no
+analytics, no error reporting services, no remote configuration calls.
+
+## Permissions justification
+
+| Permission | Why |
+|---|---|
+| `storage` | Persist your refresh interval and provider toggles. |
+| `alarms` | Trigger the background poll every N minutes so history accumulates when no new tab is open. |
+| `declarativeNetRequestWithHostAccess` | Rewrite `Origin` / `Sec-Fetch-Site` / `Referer` on the extension's own outgoing requests so Anthropic accepts them. Affects only requests initiated by the extension itself; never modifies traffic from other sites or the provider pages. |
+| `host_permissions` (claude.ai, chatgpt.com, chat.openai.com) | Make the usage API calls and inject the same-origin fallback content script for those pages. |
+
+## Your data, your machine
+
+To wipe everything Tokenxiety has stored:
+
+- Open the extension's Settings page → **Clear cache**, or
+- Remove the extension from `chrome://extensions`. All IndexedDB data in the
+  `tokenxiety` database is deleted with it.
+
+## Contact
+
+This is an open-source project. Please file issues on the public repository.
