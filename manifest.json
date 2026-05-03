@@ -2,8 +2,8 @@
   "manifest_version": 3,
   "name": "Tokenxiety",
   "description": "New tab dashboard for Claude and Codex usage limits.",
-  "version": "0.25.0",
-  "permissions": ["storage", "declarativeNetRequestWithHostAccess", "alarms"],
+  "version": "0.26.0",
+  "permissions": ["storage", "alarms"],
   "icons": {
     "16":  "src/assets/icons/icon-16.png",
     "48":  "src/assets/icons/icon-48.png",
@@ -29,15 +29,6 @@
       "run_at": "document_idle"
     }
   ],
-  "declarative_net_request": {
-    "rule_resources": [
-      {
-        "id": "tokenxiety_same_origin_signals",
-        "enabled": true,
-        "path": "src/dnr-rules.json"
-      }
-    ]
-  },
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'none'"
   },

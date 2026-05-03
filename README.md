@@ -32,7 +32,7 @@ Claude and ChatGPT do not expose a stable public quota API. Tokenxiety reuses th
 ## Build
 
 ```bash
-npm run validate     # manifest + DNR rules + JS syntax + tests
+npm run validate     # manifest + JS syntax + tests
 npm run build        # → dist/tokenxiety/  and  dist/tokenxiety.zip
 ```
 
@@ -59,15 +59,14 @@ npm run build        # → dist/tokenxiety/  and  dist/tokenxiety.zip
   - `snapshot` keyPath: `[providerId, ts]` — raw API payload, replayable
   - `bucket_sample` keyPath: `[providerId, bucketKey, ts]` — time-series
   - SHA-256 hash diff before write — only meaningful changes touch disk.
-- Direct fetch is primary (visible in new tab Network tab). DNR rules in `src/dnr-rules.json` rewrite `Origin` / `Sec-Fetch-Site` / `Referer` so Anthropic accepts cross-origin extension requests.
-- Same-origin fallback via content-script relay (`src/content-relay.js`) on claude.ai / chatgpt.com tabs.
+- Direct fetch is primary (visible in new tab Network tab). For Claude we send `anthropic-client-platform: web_claude_ai` and probe every org returned by `/api/organizations` until one responds 200. For Codex we obtain a Bearer token from `/api/auth/session` and call `/backend-api/wham/usage`.
+- Same-origin fallback via content-script relay (`src/content-relay.js`) on claude.ai / chatgpt.com tabs if the cross-origin path is ever blocked.
 
 ## Files
 
 | File | Role |
 |---|---|
 | `manifest.json` | MV3 manifest |
-| `src/dnr-rules.json` | Header rewrites for cross-origin extension fetches |
 | `src/background.js` | Service-worker cron (chrome.alarms) |
 | `src/providers.js` | Claude + Codex fetchers (direct + relay) |
 | `src/extractors.js` | Pure parsers (unit-tested) |

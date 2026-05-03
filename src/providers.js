@@ -36,10 +36,10 @@ const CLAUDE_HEADERS = {
 
 export async function fetchClaudeUsage({ runtime } = {}) {
   // Direct first so the request is visible in the new tab's Network tab.
-  // DNR rewrites Sec-Fetch-Site/Origin/Referer, anthropic-client-platform is
-  // attached, cookies flow via credentials:include + host_permissions. We probe
-  // every org from /api/organizations because lastActiveOrg cookie isn't
-  // readable without the `cookies` permission.
+  // We attach `anthropic-client-platform: web_claude_ai` (Anthropic's gateway
+  // requires it) and let credentials:include + host_permissions carry the
+  // user's cookies. We probe every org from /api/organizations because the
+  // lastActiveOrg cookie isn't readable without the `cookies` permission.
   console.debug("[tokenxiety] claude: trying direct cross-origin fetch");
   const direct = await fetchClaudeUsageDirect(runtime);
   if (direct?.quota?.status === "ready") {

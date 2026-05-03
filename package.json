@@ -1,6 +1,6 @@
 {
   "name": "tokenxiety",
-  "version": "0.25.0",
+  "version": "0.26.0",
   "private": true,
   "description": "New tab dashboard for Claude and Codex usage limits.",
   "license": "MIT",
@@ -8,7 +8,7 @@
   "type": "module",
   "scripts": {
     "syntax": "for f in src/*.js; do node --check \"$f\"; done",
-    "manifest": "python3 -m json.tool manifest.json >/dev/null && python3 -m json.tool src/dnr-rules.json >/dev/null",
+    "manifest": "python3 -m json.tool manifest.json >/dev/null",
     "test": "node --test test/*.test.mjs",
     "validate": "npm run manifest && npm run syntax && npm test",
     "build": "rm -rf dist/tokenxiety dist/tokenxiety-quota-tab && mkdir -p dist/tokenxiety && cp manifest.json dist/tokenxiety/ && cp -R src dist/tokenxiety/src && cp -R dist/tokenxiety dist/tokenxiety-quota-tab && cd dist && zip -qr tokenxiety.zip tokenxiety && cd - >/dev/null && echo built dist/tokenxiety"

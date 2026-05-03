@@ -58,7 +58,6 @@ analytics, no error reporting services, no remote configuration calls.
 |---|---|
 | `storage` | Persist your refresh interval and provider toggles. |
 | `alarms` | Trigger the background poll every N minutes so history accumulates when no new tab is open. |
-| `declarativeNetRequestWithHostAccess` | Rewrite `Origin` / `Sec-Fetch-Site` / `Referer` on the extension's own outgoing requests so Anthropic accepts them. Affects only requests initiated by the extension itself; never modifies traffic from other sites or the provider pages. |
 | `host_permissions` (claude.ai, chatgpt.com, chat.openai.com) | Make the usage API calls and inject the same-origin fallback content script for those pages. |
 
 ## Your data, your machine
