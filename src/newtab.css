@@ -814,7 +814,13 @@ body {
   align-items: center;
   gap: 10px;
 }
-.foot .brand-glyph { width: 18px; height: 18px; font-size: 10px; }
+.foot-mark {
+  width: 1.25rem;
+  height: 1.25rem;
+  display: block;
+  image-rendering: pixelated;        /* keep the pixel grid crisp */
+  image-rendering: crisp-edges;
+}
 .foot-title {
   font-family: var(--display);
   font-size: 14px;
