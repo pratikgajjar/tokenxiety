@@ -3,6 +3,8 @@
   "version": "0.25.0",
   "private": true,
   "description": "New tab dashboard for Claude and Codex usage limits.",
+  "license": "MIT",
+  "author": "pg@backend.how",
   "type": "module",
   "scripts": {
     "syntax": "for f in src/*.js; do node --check \"$f\"; done",

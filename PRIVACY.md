@@ -71,4 +71,8 @@ To wipe everything Tokenxiety has stored:
 
 ## Contact
 
-This is an open-source project. Please file issues on the public repository.
+Tokenxiety is open source under the MIT License.
+
+- Owner: **pg@backend.how**
+- License: see `LICENSE` in the source repository
+- Issues / questions: please email the owner above
