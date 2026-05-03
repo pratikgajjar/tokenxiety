@@ -1,0 +1,48 @@
+{
+  "manifest_version": 3,
+  "name": "Tokenxiety",
+  "description": "New tab dashboard for Claude and Codex usage limits.",
+  "version": "0.25.0",
+  "permissions": ["storage", "declarativeNetRequestWithHostAccess", "alarms"],
+  "host_permissions": [
+    "https://claude.ai/*",
+    "https://chatgpt.com/*",
+    "https://chat.openai.com/*"
+  ],
+  "background": {
+    "service_worker": "src/background.js",
+    "type": "module"
+  },
+  "chrome_url_overrides": {
+    "newtab": "src/newtab.html"
+  },
+  "options_page": "src/options.html",
+  "content_scripts": [
+    {
+      "matches": ["https://claude.ai/*", "https://chatgpt.com/*", "https://chat.openai.com/*"],
+      "js": ["src/content-relay.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "tokenxiety_same_origin_signals",
+        "enabled": true,
+        "path": "src/dnr-rules.json"
+      }
+    ]
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'none'"
+  },
+  "action": {
+    "default_title": "Tokenxiety"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "tokenxiety@tokenxiety.local",
+      "strict_min_version": "115.0"
+    }
+  }
+}

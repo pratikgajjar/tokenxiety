@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+EXT_DIR="$ROOT/dist/tokenxiety"
+CHROMIUM_APP="${TOKENXIETY_CHROMIUM_APP:-/Applications/Chromium.app}"
+PROFILE_DIR="${TOKENXIETY_CHROMIUM_PROFILE:-Profile 3}"
+
+if [[ ! -d "$EXT_DIR" ]]; then
+  echo "Build first: npm run build" >&2
+  exit 1
+fi
+
+# Important: this opens an additional window in the existing browser
+# instead of restarting it. We never quit the user's running Chromium.
+open -na "$CHROMIUM_APP" --args \
+  --profile-directory="$PROFILE_DIR" \
+  --load-extension="$EXT_DIR" \
+  "${1:-chrome://newtab}"

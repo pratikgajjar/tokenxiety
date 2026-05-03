@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tokenxiety · Settings</title>
+    <link rel="stylesheet" href="newtab.css">
+    <link rel="stylesheet" href="options.css">
+  </head>
+  <body>
+    <main class="page">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-name">tokenxiety</span>
+          <span class="brand-tag">/settings</span>
+          <span id="versionTag" class="brand-version" title="Extension version">v—</span>
+        </div>
+      </header>
+
+      <form id="settingsForm" class="card settings-card">
+        <h1 class="settings-title">Providers</h1>
+        <p class="muted-mono">Tokenxiety calls each provider with the cookies in your existing browser session. No tokens are stored.</p>
+
+        <ul class="provider-list">
+          <li>
+            <label>
+              <input id="claudeEnabled" type="checkbox">
+              <span>
+                <strong>Claude</strong>
+                <small class="muted-mono">claude.ai · /api/organizations/&lt;org&gt;/usage</small>
+              </span>
+            </label>
+          </li>
+          <li>
+            <label>
+              <input id="codexEnabled" type="checkbox">
+              <span>
+                <strong>Codex / ChatGPT</strong>
+                <small class="muted-mono">chatgpt.com · best-effort browser session call</small>
+              </span>
+            </label>
+          </li>
+        </ul>
+
+        <label class="refresh-field">
+          Refresh interval (minutes)
+          <input id="refreshMinutes" type="number" min="1" max="240" step="1">
+        </label>
+
+        <div class="actions">
+          <button class="btn-ghost" id="saveButton" type="submit">Save</button>
+          <button class="btn-ghost" id="clearButton" type="button">Clear cache</button>
+        </div>
+
+        <p id="status" class="muted-mono" role="status"></p>
+
+        <section class="security-note">
+          <h2>Privacy</h2>
+          <ul>
+            <li>Host access is limited to <code>claude.ai</code>, <code>chatgpt.com</code>, <code>chat.openai.com</code>.</li>
+            <li>Only sanitized utilization numbers are stored locally; raw responses, prompts, and tokens are not.</li>
+            <li>Cookies are sent by the browser; the extension never reads them directly.</li>
+          </ul>
+        </section>
+      </form>
+    </main>
+
+    <script type="module" src="options.js"></script>
+  </body>
+</html>

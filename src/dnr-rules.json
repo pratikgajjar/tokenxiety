@@ -1,0 +1,59 @@
+[
+  {
+    "id": 1,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        { "header": "origin", "operation": "set", "value": "https://claude.ai" },
+        { "header": "referer", "operation": "set", "value": "https://claude.ai/settings/usage" },
+        { "header": "sec-fetch-site", "operation": "set", "value": "same-origin" },
+        { "header": "sec-fetch-mode", "operation": "set", "value": "cors" },
+        { "header": "sec-fetch-dest", "operation": "set", "value": "empty" }
+      ]
+    },
+    "condition": {
+      "regexFilter": "^https://claude\\.ai/api/.*",
+      "resourceTypes": ["xmlhttprequest"],
+      "excludedInitiatorDomains": ["claude.ai"]
+    }
+  },
+  {
+    "id": 2,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        { "header": "origin", "operation": "set", "value": "https://chatgpt.com" },
+        { "header": "referer", "operation": "set", "value": "https://chatgpt.com/codex/cloud/settings/analytics" },
+        { "header": "sec-fetch-site", "operation": "set", "value": "same-origin" },
+        { "header": "sec-fetch-mode", "operation": "set", "value": "cors" },
+        { "header": "sec-fetch-dest", "operation": "set", "value": "empty" }
+      ]
+    },
+    "condition": {
+      "regexFilter": "^https://chatgpt\\.com/(backend-api|api)/.*",
+      "resourceTypes": ["xmlhttprequest"],
+      "excludedInitiatorDomains": ["chatgpt.com"]
+    }
+  },
+  {
+    "id": 3,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        { "header": "origin", "operation": "set", "value": "https://chat.openai.com" },
+        { "header": "referer", "operation": "set", "value": "https://chat.openai.com/" },
+        { "header": "sec-fetch-site", "operation": "set", "value": "same-origin" },
+        { "header": "sec-fetch-mode", "operation": "set", "value": "cors" },
+        { "header": "sec-fetch-dest", "operation": "set", "value": "empty" }
+      ]
+    },
+    "condition": {
+      "regexFilter": "^https://chat\\.openai\\.com/(backend-api|api)/.*",
+      "resourceTypes": ["xmlhttprequest"],
+      "excludedInitiatorDomains": ["chat.openai.com"]
+    }
+  }
+]

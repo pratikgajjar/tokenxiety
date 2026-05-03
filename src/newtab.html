@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en" data-mode="dark">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Tokenxiety</title>
+    <link rel="stylesheet" href="newtab.css">
+  </head>
+  <body>
+    <div class="page">
+      <header class="masthead">
+        <div class="masthead-meta">
+          <span class="live-dot" aria-hidden="true"></span>
+          <span class="lbl">live</span>
+          <span class="sep">·</span>
+          <span id="nowLabel">—</span>
+          <span class="sep">·</span>
+          <span id="syncedLabel">—</span>
+        </div>
+        <div class="masthead-actions">
+          <button id="refreshButton" class="btn-link" type="button">REFRESH</button>
+          <span class="sep">·</span>
+          <button id="settingsButton" class="btn-link" type="button">SETTINGS</button>
+        </div>
+      </header>
+
+      <div class="dual" id="providerGrid"></div>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div class="left">
+            <span class="panel-id">[01]</span>
+            <span class="panel-title">ACTIVITY · 53 WEEKS</span>
+          </div>
+          <div class="panel-meta">
+            <span id="activityTotals">—</span>
+            <span class="sep">·</span>
+            <span>derived from sampled deltas</span>
+          </div>
+        </div>
+        <div class="heatmap-wrap">
+          <div class="heatmap-tabs" id="heatmapTabs">
+            <button class="heatmap-tab is-active" data-view="both" type="button">
+              <span class="swatch-dot" style="background:linear-gradient(135deg,var(--provider-claude) 50%,var(--provider-codex) 50%);"></span>
+              Both
+            </button>
+            <button class="heatmap-tab" data-view="claude" type="button">
+              <span class="swatch-dot" style="background:var(--provider-claude);"></span>
+              Claude
+            </button>
+            <button class="heatmap-tab" data-view="codex" type="button">
+              <span class="swatch-dot" style="background:var(--provider-codex);"></span>
+              Codex
+            </button>
+          </div>
+          <div class="heatmap-head">
+            <span>Consumption intensity · daily max utilization</span>
+            <span class="total" id="heatmapTotal">—</span>
+          </div>
+          <div class="heatmap">
+            <div class="heatmap-rows">
+              <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span>
+              <span>Thu</span><span>Fri</span><span>Sat</span>
+            </div>
+            <div class="heatmap-grid-wrap">
+              <div class="heatmap-months" id="heatmapMonths"></div>
+              <div class="heatmap-grid" id="heatmapGrid"></div>
+            </div>
+          </div>
+          <div class="heatmap-legend" id="heatmapLegend"></div>
+        </div>
+      </section>
+
+      <footer class="foot">
+        <div class="foot-brand">
+          <span class="brand-glyph">∑</span>
+          <span class="foot-title">TOKENXIETY</span>
+          <span class="brand-tag" id="versionTag">v—</span>
+          <span class="sep">·</span>
+          <span class="foot-tag">tactical consumption monitor</span>
+        </div>
+        <span class="foot-meta">polls billing api · stores deltas locally · no remote telemetry</span>
+      </footer>
+    </div>
+
+    <template id="providerHeroTemplate">
+      <section class="panel phero">
+        <div class="panel-head">
+          <div class="left">
+            <span class="provider-mark"></span>
+            <a class="panel-title provider-link" target="_blank" rel="noreferrer"></a>
+          </div>
+          <div class="panel-meta">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span class="status-text"></span>
+            <span class="sep">·</span>
+            <span class="provider-synced muted">—</span>
+            <span class="sep">·</span>
+            <span class="provider-source muted">—</span>
+          </div>
+        </div>
+        <div class="phero-top">
+          <div class="phero-left">
+            <div class="phero-eyebrow"><span class="phero-eyebrow-text"></span></div>
+            <h3 class="phero-name"></h3>
+            <div class="phero-sub"></div>
+            <div class="phero-figure">
+              <span class="figure-value">—</span>
+              <span class="pct">%</span>
+              <span class="lbl">LEFT</span>
+            </div>
+            <div class="focus-bar-wrap">
+              <div class="focus-bar-head">
+                <span class="bar-used">USED · —%</span>
+                <span>CAP · 100%</span>
+              </div>
+              <div class="focus-bar-thresholds" aria-hidden="true">
+                <span class="thresh-label" style="--at:50%">50%</span>
+                <span class="thresh-label" style="--at:80%">80%</span>
+              </div>
+              <div class="bar">
+                <div class="bar-fill"></div>
+                <div class="bar-track-marks"></div>
+                <div class="bar-thresh" style="--at:50%"></div>
+                <div class="bar-thresh" style="--at:80%"></div>
+              </div>
+              <div class="bar-axis">
+                <span>0</span><span>25</span><span>50</span><span>75</span><span>100</span>
+              </div>
+            </div>
+            <dl class="phero-kv">
+              <div class="kv"><dt class="kv-k">Countdown</dt><dd class="kv-v countdown-value">—</dd></div>
+              <div class="kv"><dt class="kv-k">Delta · 1h</dt><dd class="kv-v is-accent delta-value">—</dd></div>
+            </dl>
+          </div>
+          <div class="phero-right">
+            <div class="phero-eyebrow"><span>BURN PROJECTION · LAST 6H + EXTRAPOLATION</span></div>
+            <svg class="phero-spark" viewBox="0 0 780 110" preserveAspectRatio="none" aria-hidden="true">
+              <g class="spark-thresholds"></g>
+              <path class="spark-fill"></path>
+              <path class="spark-line" fill="none" stroke-width="1.75"></path>
+              <path class="spark-projection" fill="none" stroke-width="1.25" stroke-dasharray="3 3" opacity="0.65"></path>
+              <line class="spark-now" x1="520" y1="0" x2="520" y2="110" stroke-width="1"></line>
+              <text class="spark-now-label" x="524" y="11" font-size="10" letter-spacing="0.1em">NOW</text>
+            </svg>
+            <div class="phero-stat-row">
+              <div class="kv"><dt class="kv-k">WINDOW</dt><dd class="kv-v window-value">—</dd></div>
+              <div class="kv"><dt class="kv-k">SAMPLES</dt><dd class="kv-v samples-value">—</dd></div>
+              <div class="kv"><dt class="kv-k">PROJ · EOL</dt><dd class="kv-v projection-value">—</dd></div>
+            </div>
+          </div>
+        </div>
+        <div class="phero-account">
+          <span class="phero-account-plan"></span>
+          <span class="sep">·</span>
+          <span class="phero-account-email"></span>
+          <a class="phero-account-link" target="_blank" rel="noreferrer">manage →</a>
+        </div>
+        <div class="phero-rest">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th style="width:38%">Other limits</th>
+                <th style="width:34%">Utilization</th>
+                <th style="width:28%">Resets</th>
+              </tr>
+            </thead>
+            <tbody class="rest-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </template>
+
+    <template id="restRowTemplate">
+      <tr>
+        <td>
+          <div class="cell-name">
+            <span class="nm"></span>
+            <span class="id"></span>
+          </div>
+        </td>
+        <td>
+          <div class="cell-bar">
+            <div class="mini-bar"><div class="mini-bar-fill"></div></div>
+            <div class="mini-pct"></div>
+          </div>
+        </td>
+        <td>
+          <div class="cell-meta reset-meta"></div>
+        </td>
+      </tr>
+    </template>
+
+    <script type="module" src="newtab.js"></script>
+  </body>
+</html>
