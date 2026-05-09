@@ -1,7 +1,7 @@
 "use strict";
 
 const DB_NAME = "tokenxiety";
-const DB_VERSION = 3;
+const DB_VERSION = 4;
 
 const QUOTA_LATEST_STORE = "quota_latest";  // keyPath: providerId
 const SNAPSHOT_STORE = "snapshot";           // keyPath: [providerId, ts] — raw API payload
@@ -29,8 +29,11 @@ function openDb() {
       const db = event.target.result;
       const oldVersion = event.oldVersion;
 
-      if (oldVersion < 3) {
-        // Drop legacy stores; v3 uses unix-ms numbers (not ISO strings) for ts.
+      if (oldVersion < 4) {
+        // v3 → v4: drop everything to wipe stale `quota_latest` rows whose
+        // `_hash` was computed by the broken replacer-as-array stringify.
+        // Earlier reset (v3 introduced unix-ms ts numbers) also handled here
+        // for any user upgrading from v2.
         for (const legacy of ["quota", "history", QUOTA_LATEST_STORE, SNAPSHOT_STORE, BUCKET_SAMPLE_STORE]) {
           if (db.objectStoreNames.contains(legacy)) db.deleteObjectStore(legacy);
         }
@@ -127,25 +130,17 @@ export async function dbLoadQuota(providerId) {
 
 /**
  * Save derived quota + raw API response. ts is unix-ms (number).
- * Diffs against the existing latest record using a SHA-256 of the raw payload
- * (or, if not provided, of the derived fields). If the hash matches, only
- * bumps _lastObservedAtMs and skips the snapshot insert. If the hash differs,
- * inserts snapshot + updates latest + appends bucket samples for any bucket
- * whose utilization changed.
+ *
+ * `quota_latest` is ALWAYS overwritten with the freshest derived fields so
+ * the dashboard never goes stale. The hash only decides whether we also
+ * insert a new row into the `snapshot` store (raw payload archive). Bucket
+ * sample appends are deduped separately in dbAppendBucketSampleIfChanged.
  */
 export async function dbSaveQuotaIfChanged(providerId, derived, rawPayload, ts) {
   const observedMs = ensureMs(ts ?? derived.observedAt);
   const existing = await dbLoadQuota(providerId);
   const hash = await hashContent(rawPayload ?? derived);
-
-  if (existing?._hash === hash) {
-    const merged = { ...existing, _lastObservedAtMs: observedMs };
-    await withTx(QUOTA_LATEST_STORE, "readwrite", (transaction) =>
-      awaitRequest(transaction.objectStore(QUOTA_LATEST_STORE).put(merged))
-    );
-    notify({ type: "quota-touched", providerId });
-    return { changed: false, quota: merged };
-  }
+  const isSame = existing?._hash === hash;
 
   const record = {
     ...derived,
@@ -156,7 +151,7 @@ export async function dbSaveQuotaIfChanged(providerId, derived, rawPayload, ts) 
 
   await withTx([QUOTA_LATEST_STORE, SNAPSHOT_STORE], "readwrite", async (transaction) => {
     await awaitRequest(transaction.objectStore(QUOTA_LATEST_STORE).put(record));
-    if (rawPayload !== undefined && rawPayload !== null) {
+    if (!isSame && rawPayload !== undefined && rawPayload !== null) {
       await awaitRequest(transaction.objectStore(SNAPSHOT_STORE).put({
         providerId,
         ts: observedMs,
@@ -166,8 +161,8 @@ export async function dbSaveQuotaIfChanged(providerId, derived, rawPayload, ts) 
     }
   });
 
-  notify({ type: "quota-changed", providerId });
-  return { changed: true, quota: record };
+  notify({ type: isSame ? "quota-touched" : "quota-changed", providerId });
+  return { changed: !isSame, quota: record };
 }
 
 /* ---------------- bucket_sample ---------------- */
@@ -288,7 +283,19 @@ function ensureMs(value) {
 }
 
 async function hashContent(value) {
-  const json = JSON.stringify(value, Object.keys(value ?? {}).sort());
+  const json = stableStringify(value);
   const buffer = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(json));
   return [...new Uint8Array(buffer)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+// Recursive deterministic stringify. Object keys are sorted at every level so
+// equivalent payloads always produce the same string — and crucially, NESTED
+// values are kept (unlike the JSON.stringify replacer-as-array trick which
+// silently strips nested keys not in the top-level list).
+function stableStringify(value) {
+  if (value === null || value === undefined) return "null";
+  if (typeof value !== "object") return JSON.stringify(value);
+  if (Array.isArray(value)) return "[" + value.map(stableStringify).join(",") + "]";
+  const keys = Object.keys(value).sort();
+  return "{" + keys.map((k) => JSON.stringify(k) + ":" + stableStringify(value[k])).join(",") + "}";
 }

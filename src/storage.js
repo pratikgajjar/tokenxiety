@@ -117,7 +117,11 @@ export async function saveProviderQuota(providerId, quota, rawPayload) {
 
   const result = await dbSaveQuotaIfChanged(providerId, sanitized, rawPayload);
 
-  if (result.changed && Array.isArray(sanitized.buckets)) {
+  // Always attempt to append a sample for every bucket. The append function
+  // dedupes against the last stored value, so unchanged buckets are no-ops.
+  // This keeps history correct even if the snapshot-level hash thinks
+  // "nothing changed" but a single bucket actually moved.
+  if (Array.isArray(sanitized.buckets)) {
     for (const bucket of sanitized.buckets) {
       await dbAppendBucketSampleIfChanged(providerId, bucket.key, {
         t: sanitized.observedAt,
