@@ -3,6 +3,7 @@
 import { fetchClaudeUsage, fetchCodexUsage, PROVIDER_DEFS } from "./providers.js";
 import {
   loadConfig,
+  saveConfig,
   loadProviderQuotaCache,
   loadProviderHistory,
   loadProviderRuntime,
@@ -106,7 +107,7 @@ async function render() {
 
   const providers = enabledProviders(config);
 
-  renderProviderHeroes(providers, cache, history);
+  renderProviderHeroes(providers, cache, history, config);
   renderHeatmap(history, cache);
 
   if (cache.updatedAt) {
@@ -120,7 +121,7 @@ async function render() {
 /*  Provider heroes                                            */
 /* ----------------------------------------------------------- */
 
-function renderProviderHeroes(providers, cache, history) {
+function renderProviderHeroes(providers, cache, history, config) {
   DOMS.providerGrid.replaceChildren();
 
   providers.forEach((provider) => {
@@ -128,6 +129,7 @@ function renderProviderHeroes(providers, cache, history) {
     const buckets = enrichedBuckets(provider, quota, history[provider.id] ?? {});
     const node = TEMPLATES.hero.content.firstElementChild.cloneNode(true);
     addClassIf(node, PROVIDER_THEME[provider.id]);
+    const pinnedKey = config?.pinnedBucket?.[provider.id] ?? null;
 
     node.querySelector(".provider-mark").innerHTML = providerGlyphSvg(provider.id);
 
@@ -146,7 +148,7 @@ function renderProviderHeroes(providers, cache, history) {
     accountLinkNode.href = provider.usageUrl ?? provider.appUrl ?? "#";
     accountLinkNode.textContent = `${provider.name.toLowerCase()} usage →`;
 
-    const main = pickPrimary(buckets);
+    const main = pickPrimary(buckets, pinnedKey);
     const status = node.querySelector(".status-dot");
     const statusText = node.querySelector(".status-text");
     let statusClass = "is-flat";
@@ -214,7 +216,7 @@ function renderProviderHeroes(providers, cache, history) {
       restBody.innerHTML = `<tr><td colspan="3" class="cell-meta" style="padding:18px;color:var(--ink-quiet);">No additional limits exposed.</td></tr>`;
     } else {
       for (const bucket of rest) {
-        restBody.append(buildRestRow(bucket));
+        restBody.append(buildRestRow(bucket, provider.id));
       }
     }
 
@@ -222,8 +224,13 @@ function renderProviderHeroes(providers, cache, history) {
   });
 }
 
-function pickPrimary(buckets) {
+function pickPrimary(buckets, pinnedKey) {
   if (!buckets || buckets.length === 0) return null;
+  if (pinnedKey) {
+    const pinned = buckets.find((bucket) => bucket.key === pinnedKey);
+    if (pinned) return pinned;
+  }
+  // Default: the 5-hour window (matches the providers' own primary limit).
   return buckets.find((bucket) => bucket.windowSeconds === 18000)
     ?? buckets.find((bucket) => /five|5h|primary/i.test(bucket.label))
     ?? buckets[0];
@@ -273,8 +280,17 @@ function formatWindowLabel(seconds) {
   return `${seconds}s`;
 }
 
-function buildRestRow(bucket) {
+function buildRestRow(bucket, providerId) {
   const node = TEMPLATES.rest.content.firstElementChild.cloneNode(true);
+  node.classList.add("is-clickable");
+  node.title = `Pin "${bucket.label}" as the primary card for this provider`;
+  node.tabIndex = 0;
+  node.setAttribute("role", "button");
+  const promote = () => pinBucket(providerId, bucket.key);
+  node.addEventListener("click", promote);
+  node.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") { event.preventDefault(); promote(); }
+  });
   node.querySelector(".nm").textContent = bucket.label;
   node.querySelector(".id").textContent = `${bucket.short ?? bucket.key} · ${formatNumber(bucket.utilization, 1)}% used · ${formatNumber(bucket.remainingPercent, 1)}% left`;
 
@@ -627,6 +643,15 @@ function formatDuration(ms) {
 function addClassIf(node, className) {
   if (!node || !className) return;
   node.classList.add(className);
+}
+
+async function pinBucket(providerId, bucketKey) {
+  const config = await loadConfig();
+  config.pinnedBucket = config.pinnedBucket ?? { claude: null, codex: null };
+  // Toggle: clicking the already-pinned bucket clears the pin (back to default).
+  config.pinnedBucket[providerId] = config.pinnedBucket[providerId] === bucketKey ? null : bucketKey;
+  await saveConfig(config);
+  void render();
 }
 
 function providerGlyphSvg(providerId) {

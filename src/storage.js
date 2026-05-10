@@ -15,7 +15,9 @@ const RUNTIME_KEY = "providerRuntime";
 
 const DEFAULT_CONFIG = Object.freeze({
   refreshMinutes: 1,
-  providers: Object.freeze({ claude: true, codex: true })
+  providers: Object.freeze({ claude: true, codex: true }),
+  // Per-provider hero pin. null = use the default (the 5-hour window).
+  pinnedBucket: Object.freeze({ claude: null, codex: null })
 });
 
 const ALLOWED_STATUSES = ["ready", "not_found", "login_required", "error"];
@@ -75,8 +77,18 @@ export function mergeConfig(config = {}) {
     providers: {
       claude: config.providers?.claude !== false,
       codex: config.providers?.codex !== false
+    },
+    pinnedBucket: {
+      claude: sanitizePinnedBucketKey(config.pinnedBucket?.claude),
+      codex: sanitizePinnedBucketKey(config.pinnedBucket?.codex)
     }
   };
+}
+
+function sanitizePinnedBucketKey(value) {
+  if (typeof value !== "string") return null;
+  // bucket keys are lowercase letters/digits/_/- only (matches safeToken)
+  return /^[a-z0-9_-]{1,64}$/i.test(value) ? value : null;
 }
 
 /* -------------------- provider runtime (small, chrome.storage.local) -------------------- */

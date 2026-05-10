@@ -1,6 +1,6 @@
 {
   "name": "tokenxiety",
-  "version": "0.29.0",
+  "version": "0.30.0",
   "private": true,
   "description": "New tab dashboard for Claude and Codex usage limits.",
   "license": "MIT",
