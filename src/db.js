@@ -9,7 +9,13 @@ const BUCKET_SAMPLE_STORE = "bucket_sample"; // keyPath: [providerId, bucketKey,
 const BUCKET_INDEX = "byProviderBucket";
 
 const HISTORY_RETENTION_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
-const HISTORY_RECENT_TRIM_KEEP = 2000;
+// Cap per (provider, bucket). At 1 sample / 5 min that's ~30 days of headroom.
+const HISTORY_RECENT_TRIM_KEEP = 12000;
+// Minimum spacing between two stored samples for the SAME bucket+value. Even
+// if used_percent didn't change, we still append after this much idle time so
+// the burn-projection chart has time anchors and flat periods render as a
+// flat line at the right level (rather than a single dot drifting forever).
+const SAMPLE_HEARTBEAT_MS = 5 * 60 * 1000;
 const SNAPSHOT_RETENTION_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 const SNAPSHOT_KEEP_PER_PROVIDER = 200;
 
@@ -170,7 +176,13 @@ export async function dbSaveQuotaIfChanged(providerId, derived, rawPayload, ts) 
 export async function dbAppendBucketSampleIfChanged(providerId, bucketKey, sample) {
   const tsMs = ensureMs(sample.t);
   const last = await dbLoadLastBucketSample(providerId, bucketKey);
-  if (last && last.u === sample.u) return { appended: false };
+
+  // Skip the append only when BOTH conditions hold: same value AND we already
+  // recorded one recently. Heartbeat appends preserve a real time axis for
+  // the chart even when used_percent is a coarse integer that doesn't tick.
+  if (last && last.u === sample.u && tsMs - Number(last.ts) < SAMPLE_HEARTBEAT_MS) {
+    return { appended: false };
+  }
 
   await withTx(BUCKET_SAMPLE_STORE, "readwrite", (transaction) =>
     awaitRequest(transaction.objectStore(BUCKET_SAMPLE_STORE).put({
