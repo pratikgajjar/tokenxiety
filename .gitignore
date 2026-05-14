@@ -4,3 +4,10 @@ dist/
 .DS_Store
 .pi/
 ._*
+
+# Chrome Web Store "Verified CRX upload" signing keys.
+# Anyone with these can push malicious updates that Chrome accepts as
+# authentic. They must NEVER be committed to git or shared.
+.keys/
+*.pem
+*.crx

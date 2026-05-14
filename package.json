@@ -11,6 +11,9 @@
     "manifest": "python3 -m json.tool manifest.json >/dev/null && python3 scripts/check-manifest.py manifest.json",
     "test": "node --test test/*.test.mjs",
     "validate": "npm run manifest && npm run syntax && npm test",
-    "build": "rm -rf dist/tokenxiety dist/tokenxiety-quota-tab dist/tokenxiety.zip && mkdir -p dist/tokenxiety && cp manifest.json dist/tokenxiety/ && cp -R src dist/tokenxiety/src && find dist/tokenxiety \\( -name '.DS_Store' -o -name '._*' -o -name 'Thumbs.db' \\) -delete && cp -R dist/tokenxiety dist/tokenxiety-quota-tab && python3 scripts/make-zip.py dist/tokenxiety dist/tokenxiety.zip && echo built dist/tokenxiety"
+    "build": "rm -rf dist/tokenxiety dist/tokenxiety-quota-tab dist/tokenxiety.zip dist/tokenxiety.crx && mkdir -p dist/tokenxiety && cp manifest.json dist/tokenxiety/ && cp -R src dist/tokenxiety/src && find dist/tokenxiety \\( -name '.DS_Store' -o -name '._*' -o -name 'Thumbs.db' \\) -delete && cp -R dist/tokenxiety dist/tokenxiety-quota-tab && python3 scripts/make-zip.py dist/tokenxiety dist/tokenxiety.zip && echo built dist/tokenxiety",
+    "sign:keygen": "bash scripts/generate-signing-key.sh",
+    "pack:crx": "uv run scripts/pack-crx.py dist/tokenxiety dist/tokenxiety.crx .keys/tokenxiety.pem",
+    "release": "npm run validate && npm run build && npm run pack:crx"
   }
 }
