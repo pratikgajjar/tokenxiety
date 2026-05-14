@@ -1,8 +1,15 @@
-# Tokenxiety
+# Tokenxiety — Unofficial AI Usage Monitor
 
-New tab dashboard for **Claude** and **Codex / ChatGPT** usage limits.
+> **Tokenxiety is an independent open-source project. It is _not_ affiliated
+> with, endorsed by, or sponsored by Anthropic, OpenAI, or any other AI
+> service provider. "Claude" is a trademark of Anthropic. "ChatGPT" and
+> "Codex" are trademarks of OpenAI. These names are used here solely to
+> describe interoperability — what this tool reads when you are signed in
+> on those services in your own browser — under nominative fair use.**
 
-The new tab calls each provider's own usage API with the cookies in your existing browser session, parses the utilization buckets, and renders a tactical dashboard with per-bucket meters, burn-projection sparklines, reset countdowns, and an activity heatmap built from your real polling history.
+Unofficial new tab dashboard that reads your own rate-limit usage from the supported AI chat services you are already signed in to.
+
+The new tab calls each service's own usage endpoint with the cookies in your existing browser session, parses the utilization buckets, and renders a tactical dashboard with per-bucket meters, burn-projection sparklines, reset countdowns, and an activity heatmap built from your real polling history.
 
 ## What it shows
 

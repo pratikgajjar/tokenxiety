@@ -1,11 +1,20 @@
 # Tokenxiety — Privacy Policy
 
-_Last updated: 2026-05-03_
+_Last updated: 2026-05-13_
+
+## Independent project — no affiliation
+
+Tokenxiety is an independent open-source project. It is **not** affiliated
+with, endorsed by, or sponsored by Anthropic, OpenAI, or any other AI service
+provider. "Claude" is a trademark of Anthropic. "ChatGPT" and "Codex" are
+trademarks of OpenAI. Those names appear in this document only to identify the
+third-party services Tokenxiety interoperates with — strictly under nominative
+fair use.
 
 ## Summary
 
-Tokenxiety is a browser extension that displays your **own** Claude (Anthropic)
-and Codex / ChatGPT (OpenAI) usage limits on your new tab page. It does not
+Tokenxiety is a browser extension that displays your **own** usage limits from
+the AI chat services you are signed in to, on your new tab page. It does not
 send any of your data to a server we control. Everything is processed and
 stored locally in your browser.
 

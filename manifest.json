@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Tokenxiety",
-  "description": "New tab dashboard for Claude and Codex usage limits.",
-  "version": "0.31.0",
+  "name": "Tokenxiety — Unofficial AI Usage Monitor",
+  "description": "Unofficial new tab dashboard that reads your own rate-limit usage from supported AI chat services. Not affiliated with Anthropic or OpenAI.",
+  "version": "0.32.0",
   "permissions": ["storage", "alarms"],
   "icons": {
     "16":  "src/assets/icons/icon-16.png",
@@ -33,7 +33,7 @@
     "extension_pages": "script-src 'self'; object-src 'none'"
   },
   "action": {
-    "default_title": "Tokenxiety",
+    "default_title": "Tokenxiety — Unofficial AI Usage Monitor",
     "default_icon": {
       "16":  "src/assets/icons/icon-16.png",
       "48":  "src/assets/icons/icon-48.png",

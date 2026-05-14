@@ -1,8 +1,8 @@
 {
   "name": "tokenxiety",
-  "version": "0.31.0",
+  "version": "0.32.0",
   "private": true,
-  "description": "New tab dashboard for Claude and Codex usage limits.",
+  "description": "Unofficial new tab dashboard for AI chat usage limits. Not affiliated with Anthropic or OpenAI.",
   "license": "MIT",
   "author": "pg@backend.how",
   "type": "module",
