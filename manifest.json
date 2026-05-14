@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Tokenxiety — Unofficial AI Usage Monitor",
-  "description": "Unofficial new tab dashboard that reads your own rate-limit usage from supported AI chat services. Not affiliated with Anthropic or OpenAI.",
-  "version": "0.32.0",
+  "description": "Unofficial new tab dashboard for your own AI chat rate-limit usage. Not affiliated with Anthropic or OpenAI.",
+  "version": "0.32.1",
   "permissions": ["storage", "alarms"],
   "icons": {
     "16":  "src/assets/icons/icon-16.png",
